@@ -1,0 +1,6 @@
+{
+  "name": "FarmGain — Smart Agricultural Procurement & Slot Booking Platform",
+  "description": "AI-assisted, multilingual agricultural procurement centre discovery, dynamic capacity management, and smart multi-unit slot booking platform.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
