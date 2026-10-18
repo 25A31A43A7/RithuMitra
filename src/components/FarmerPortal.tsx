@@ -92,16 +92,98 @@ export const FarmerPortal: React.FC<FarmerPortalProps> = ({
   // Scope filter: default to 'city' as required by prompt
   const [viewScope, setViewScope] = useState<'city' | 'all'>('city');
 
+  // Accuracy in meters from device GPS or fallback
+  const [accuracyMeters, setAccuracyMeters] = useState<number | null>(35);
+
   // 1. Robust Geolocation with IP Fallback (NEVER stuck on GPS Denied)
   const acquireLocationWithIpFallback = () => {
     setGpsStatus('ACQUIRING');
-    setLocationStatusMessage('Acquiring location via GPS...');
+    setLocationStatusMessage(
+      lang === 'te'
+        ? 'GPS ద్వారా ఖచ్చితమైన స్థానాన్ని గుర్తిస్తోంది...'
+        : lang === 'hi'
+        ? 'जीपीएस द्वारा सटीक स्थान प्राप्त किया जा रहा है...'
+        : 'Acquiring high-accuracy GPS coordinates...'
+    );
 
     if (typeof navigator !== 'undefined' && navigator.geolocation) {
+      // First attempt: High accuracy with 8s timeout
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const coords: [number, number] = [position.coords.latitude, position.coords.longitude];
+          const acc = position.coords.accuracy || 25;
           setFarmerCoords(coords);
+          setAccuracyMeters(acc);
+          setGpsStatus('SUCCESS');
+          const detectedRegion = getClosestRegion(coords);
+          const localCentres = initialCentres.filter((c) => c.region === detectedRegion);
+          if (localCentres.length > 0) {
+            const green = localCentres.find((c) => c.status === 'GREEN' && !c.emergencyFull);
+            setSelectedCentreId(green ? green.id : localCentres[0].id);
+          }
+          const accStr = acc ? ` (±${Math.round(acc)}m)` : '';
+          setLocationStatusMessage(
+            `📍 Live GPS: [${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}]${accStr}`
+          );
+        },
+        () => {
+          // Second attempt: Normal accuracy with cached position allowed
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              const coords: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+              const acc = pos.coords.accuracy || 60;
+              setFarmerCoords(coords);
+              setAccuracyMeters(acc);
+              setGpsStatus('SUCCESS');
+              const detectedRegion = getClosestRegion(coords);
+              const localCentres = initialCentres.filter((c) => c.region === detectedRegion);
+              if (localCentres.length > 0) {
+                const green = localCentres.find((c) => c.status === 'GREEN' && !c.emergencyFull);
+                setSelectedCentreId(green ? green.id : localCentres[0].id);
+              }
+              setLocationStatusMessage(
+                `📍 Live GPS: [${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}] (±${Math.round(acc)}m)`
+              );
+            },
+            () => {
+              // Geolocation blocked or denied -> Auto-detect via network IP with instant manual pin drag
+              fallbackToIpGeolocation();
+            },
+            { timeout: 5000, enableHighAccuracy: false, maximumAge: 300000 }
+          );
+        },
+        { timeout: 7000, enableHighAccuracy: true, maximumAge: 60000 }
+      );
+    } else {
+      fallbackToIpGeolocation();
+    }
+  };
+
+  const fallbackToIpGeolocation = () => {
+    setLocationStatusMessage(
+      lang === 'te'
+        ? 'నెట్‌వర్క్ IP ద్వారా స్థానాన్ని లెక్కిస్తోంది (ipapi.co)...'
+        : lang === 'hi'
+        ? 'नेटवर्क आईपी द्वारा स्थान का पता लगाया जा रहा है (ipapi.co)...'
+        : 'Browser GPS blocked. Auto-detecting via network IP (ipapi.co)...'
+    );
+
+    // Primary fallback: ipapi.co -> secondary: ipwho.is -> default
+    fetch('https://ipapi.co/json/')
+      .then((res) => {
+        if (!res.ok) throw new Error('IP API error');
+        return res.json();
+      })
+      .then((data) => {
+        const rawLat = data.latitude;
+        const rawLng = data.longitude;
+        const lat = typeof rawLat === 'string' ? parseFloat(rawLat) : Number(rawLat);
+        const lng = typeof rawLng === 'string' ? parseFloat(rawLng) : Number(rawLng);
+
+        if (!isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0)) {
+          const coords: [number, number] = [lat, lng];
+          setFarmerCoords(coords);
+          setAccuracyMeters(2000); // Approximate IP accuracy
           setGpsStatus('SUCCESS');
           const detectedRegion = getClosestRegion(coords);
           const localCentres = initialCentres.filter((c) => c.region === detectedRegion);
@@ -110,31 +192,28 @@ export const FarmerPortal: React.FC<FarmerPortalProps> = ({
             setSelectedCentreId(green ? green.id : localCentres[0].id);
           }
           setLocationStatusMessage(
-            `📍 Live GPS Active: [${coords[0].toFixed(4)}, ${coords[1].toFixed(4)}]`
+            `🌐 Network Located: ${data.city || 'AP Agro Belt'} [${coords[0].toFixed(4)}, ${coords[1].toFixed(4)}]`
           );
-        },
-        () => {
-          // Geolocation failed or denied (common in sandboxed iframes) -> Fetch via public IP API
-          fallbackToIpGeolocation();
-        },
-        { timeout: 3500, enableHighAccuracy: true, maximumAge: 60000 }
-      );
-    } else {
-      fallbackToIpGeolocation();
-    }
+        } else {
+          fallbackToSecondaryIpApi();
+        }
+      })
+      .catch(() => {
+        fallbackToSecondaryIpApi();
+      });
   };
 
-  const fallbackToIpGeolocation = () => {
-    setLocationStatusMessage('GPS unavailable. Checking approximate network location...');
-    fetch('https://ipapi.co/json/')
+  const fallbackToSecondaryIpApi = () => {
+    fetch('https://ipwho.is/')
       .then((res) => {
-        if (!res.ok) throw new Error('IP API error');
+        if (!res.ok) throw new Error('ipwho error');
         return res.json();
       })
       .then((data) => {
-        if (data && data.latitude && data.longitude) {
+        if (data && data.success && data.latitude && data.longitude) {
           const coords: [number, number] = [Number(data.latitude), Number(data.longitude)];
           setFarmerCoords(coords);
+          setAccuracyMeters(2500);
           setGpsStatus('SUCCESS');
           const detectedRegion = getClosestRegion(coords);
           const localCentres = initialCentres.filter((c) => c.region === detectedRegion);
@@ -156,8 +235,15 @@ export const FarmerPortal: React.FC<FarmerPortalProps> = ({
 
   const fallbackToDefaultRajahmundry = () => {
     setFarmerCoords(RAJAHMUNDRY_DEFAULT_COORDS);
+    setAccuracyMeters(null);
     setGpsStatus('IDLE');
-    setLocationStatusMessage('📍 Default Agro Region: Rajahmundry (East Godavari) · Manual Picker Active');
+    setLocationStatusMessage(
+      lang === 'te'
+        ? '📍 డిఫాల్ట్ ప్రాంతం: రాజమహేంద్రవరం (తూర్పు గోదావరి) · మాన్యువల్ పిన్ యాక్టివ్'
+        : lang === 'hi'
+        ? '📍 डिफ़ॉल्ट क्षेत्र: राजमहेंद्रवरम (पूर्वी गोदावरी) · पिन खींचकर स्थान चुनें'
+        : '📍 Default Region: Rajahmundry (East Godavari) · Drag pin or click map to adjust'
+    );
     const localCentres = initialCentres.filter((c) => c.region === 'rajahmundry');
     if (localCentres.length > 0) {
       const green = localCentres.find((c) => c.status === 'GREEN' && !c.emergencyFull);
@@ -872,6 +958,7 @@ export const FarmerPortal: React.FC<FarmerPortalProps> = ({
           farmerCoords={farmerCoords}
           onUpdateFarmerCoords={handleUpdateFarmerCoords}
           isDragPinMode={isDragPinMode}
+          onToggleDragPinMode={() => setIsDragPinMode(!isDragPinMode)}
           centres={filteredCentres}
           selectedCentreId={selectedCentre.id}
           onSelectCentre={handleSelectCentre}
@@ -880,6 +967,10 @@ export const FarmerPortal: React.FC<FarmerPortalProps> = ({
           highlightRerouteToId={rerouteAlert ? rerouteAlert.recommendedCentre.id : null}
           locationStatusText={locationStatusMessage}
           regionTitle={regionTitles[activeRegion] || `${activeRegion.toUpperCase()} Mandis`}
+          accuracyMeters={accuracyMeters}
+          currentLang={lang}
+          onRecenterGps={acquireLocationWithIpFallback}
+          onSelectCity={handleSelectQuickCity}
         />
 
         {/* Procurement Centre Cards List with Live Calculated Geodesic Distances */}
@@ -1029,7 +1120,7 @@ export const FarmerPortal: React.FC<FarmerPortalProps> = ({
                 Heavy Waiting Queue at {rerouteAlert.congestedCentre.name}
               </h3>
               <p className="text-stone-600 text-sm mt-2 leading-relaxed">
-                ⚠️ <strong>{rerouteAlert.congestedCentre.name}</strong> is operating near saturation (wait time {rerouteAlert.congestedCentre.queueTimeStr}). RythuMitra recommends <strong>{rerouteAlert.recommendedCentre.name}</strong> ({rerouteAlert.recommendedCentre.distanceKm} km away, {rerouteAlert.recommendedCentre.currentCapacityPct}% capacity, wait: {rerouteAlert.recommendedCentre.queueTimeStr}).
+                ⚠️ <strong>{rerouteAlert.congestedCentre.name}</strong> is operating near saturation (wait time {rerouteAlert.congestedCentre.queueTimeStr}). FarmGain recommends <strong>{rerouteAlert.recommendedCentre.name}</strong> ({rerouteAlert.recommendedCentre.distanceKm} km away, {rerouteAlert.recommendedCentre.currentCapacityPct}% capacity, wait: {rerouteAlert.recommendedCentre.queueTimeStr}).
               </p>
             </div>
 

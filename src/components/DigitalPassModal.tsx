@@ -19,12 +19,12 @@ export const DigitalPassModal: React.FC<DigitalPassModalProps> = ({ pass, onClos
   };
 
   const handleSendWhatsApp = () => {
-    setNotificationMsg(`📲 WhatsApp Message Dispatched to ${pass.farmerPhone}: "RythuMitra Booking Confirmation: Token ${pass.id} confirmed for ${pass.commodityName} at ${pass.centreName}. Gate bay: ${pass.assignedBay}. Valid for ${pass.slotDate} (${pass.slotTime})"`);
+    setNotificationMsg(`📲 WhatsApp Message Dispatched to ${pass.farmerPhone}: "FarmGain Booking Confirmation: Token ${pass.id} confirmed for ${pass.commodityName} at ${pass.centreName}. Gate bay: ${pass.assignedBay}. Valid for ${pass.slotDate} (${pass.slotTime})"`);
     setTimeout(() => setNotificationMsg(null), 5000);
   };
 
   const handleSendSMS = () => {
-    setNotificationMsg(`📩 Official RythuMitra Mandi SMS Sent to +91-${pass.farmerPhone}: Token: ${pass.id} | Crop: ${pass.quintals} Qtl | Date: ${pass.slotDate} | Gate Bay: ${pass.assignedBay}. Present this at weighbridge entry.`);
+    setNotificationMsg(`📩 Official FarmGain Mandi SMS Sent to +91-${pass.farmerPhone}: Token: ${pass.id} | Crop: ${pass.quintals} Qtl | Date: ${pass.slotDate} | Gate Bay: ${pass.assignedBay}. Present this at weighbridge entry.`);
     setTimeout(() => setNotificationMsg(null), 5000);
   };
 

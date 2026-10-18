@@ -156,7 +156,7 @@ export default function App() {
       <div className="min-h-screen bg-stone-100 flex items-center justify-center p-4">
         <div className="text-center space-y-2">
           <div className="w-8 h-8 border-2 border-emerald-700 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs text-stone-600 font-medium">Loading RythuMitra Agricultural Registry...</p>
+          <p className="text-xs text-stone-600 font-medium">Loading FarmGain Agricultural Registry...</p>
         </div>
       </div>
     );
@@ -254,7 +254,7 @@ export default function App() {
       <footer className="bg-white border-t border-stone-200 mt-auto py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-stone-900">RythuMitra Agricultural Network</span>
+            <span className="font-bold text-stone-900">FarmGain Agricultural Network</span>
             <span>·</span>
             <span>MSP Rate Assurance 2026</span>
           </div>

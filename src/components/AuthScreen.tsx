@@ -829,7 +829,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
       {/* Footer */}
       <footer className="bg-white border-t border-stone-200 py-4 text-center text-xs text-stone-500">
-        RythuMitra Agricultural Procurement & Slot Management Platform · Andhra Pradesh State Edition
+        FarmGain Agricultural Procurement & Slot Management Platform · Andhra Pradesh State Edition
       </footer>
     </div>
   );

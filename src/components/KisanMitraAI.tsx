@@ -73,10 +73,10 @@ export const KisanMitraAI: React.FC<KisanMitraAIProps> = ({
       sender: 'bot',
       text:
         lang === 'te'
-          ? 'నమస్కారం! నేను రైతుమిత్ర (RythuMitra) అందించే కిసాన్ మిత్ర AI సహాయకుడిని. ధాన్యం కొనుగోలు కేంద్రాలు, కనీస మద్దతు ధర (MSP), బస్తాల నుండి క్వింటాళ్ల లెక్కలు, లేదా మీ వేబ్రిడ్జ్ టోకెన్ స్థితి గురించి ఏదైనా అడగవచ్చు.'
+          ? 'నమస్కారం! నేను ఫామ్‌గెయిన్ (FarmGain) అందించే కిసాన్ మిత్ర AI సహాయకుడిని. ధాన్యం కొనుగోలు కేంద్రాలు, కనీస మద్దతు ధర (MSP), బస్తాల నుండి క్వింటాళ్ల లెక్కలు, లేదా మీ వేబ్రిడ్జ్ టోకెన్ స్థితి గురించి ఏదైనా అడగవచ్చు.'
           : lang === 'hi'
-          ? 'नमस्कार! मैं रैतु मित्र (RythuMitra) द्वारा संचालित किसान मित्र एआई हूँ। आप मुझसे न्यूनतम समर्थन मूल्य (MSP), कम प्रतीक्षा वाली मंडियों, बोरी-क्विंटल गणना, या अपने कांटा टोकन के बारे में पूछ सकते हैं।'
-          : 'Namaskaram! I am Kisan Mitra, your AI assistant powered by RythuMitra. Ask me about lowest-wait APMC & PACS depots, live MSP calculations across bags and quintals, moisture guidelines, or your weighbridge gate token.',
+          ? 'नमस्कार! मैं फार्म-गेन (FarmGain) द्वारा संचालित किसान मित्र एआई हूँ। आप मुझसे न्यूनतम समर्थन मूल्य (MSP), कम प्रतीक्षा वाली मंडियों, बोरी-क्विंटल गणना, या अपने कांटा टोकन के बारे में पूछ सकते हैं।'
+          : 'Namaskaram! I am Kisan Mitra, your AI assistant powered by FarmGain. Ask me about lowest-wait APMC & PACS depots, live MSP calculations across bags and quintals, moisture guidelines, or your weighbridge gate token.',
       timestamp: 'Just now',
       chips: [
         { label: '🌾 Best depot for Paddy right now?', query: 'Best depot for Paddy right now?' },
@@ -646,7 +646,7 @@ export const KisanMitraAI: React.FC<KisanMitraAIProps> = ({
       if (lang === 'te') {
         return {
           text: `🛡️ **ప్రభుత్వ ధృవీకరించిన (Govt-Verified) కేంద్రాల గుర్తింపు:**\n\n` +
-            `రైతుమిత్ర (RythuMitra) మ్యాప్‌లో నీలిరంగు **🛡️ Govt-Verified** బ్యాడ్జ్ ఉన్న కేంద్రాలు ప్రభుత్వంచే అధికారికంగా గుర్తించబడినవి:\n` +
+            `ఫామ్‌గెయిన్ (FarmGain) మ్యాప్‌లో నీలిరంగు **🛡️ Govt-Verified** బ్యాడ్జ్ ఉన్న కేంద్రాలు ప్రభుత్వంచే అధికారికంగా గుర్తించబడినవి:\n` +
             `1. **డిజిటల్ కాలిబ్రేటెడ్ స్కేళ్లు**: ఎలక్ట్రానిక్ వేబ్రిడ్జ్ కాటాలు లీగల్ మెట్రాలజీ శాఖ వారి సీల్‌తో ట్యాంపరింగ్ లేకుండా ఉంటాయి.\n` +
             `2. **MSP ధర రక్షణ**: కేంద్ర ప్రభుత్వం మరియు ఏపీ పౌరసరఫరాల శాఖ నిర్దేశించిన పూర్తి మద్దతు ధర చెల్లింపు హామీ.\n` +
             `3. **డైరెక్ట్ DBT లింక్**: మీ రైతు భరోసా / ఆధార్ అనుసంధాన బ్యాంక్ ఖాతాకు 24-48 గంటల్లో నిధులు జమ.\n\n` +
@@ -659,7 +659,7 @@ export const KisanMitraAI: React.FC<KisanMitraAIProps> = ({
       } else {
         return {
           text: `🛡️ **Govt-Verified Centre Certification & Protection:**\n\n` +
-            `Authorized APMC Market Yards and Primary Agricultural Credit Societies (PACS) carry the prominent blue **🛡️ Govt-Verified** shield badge in RythuMitra. This guarantees:\n\n` +
+            `Authorized APMC Market Yards and Primary Agricultural Credit Societies (PACS) carry the prominent blue **🛡️ Govt-Verified** shield badge in FarmGain. This guarantees:\n\n` +
             `1. **Tamper-Proof Calibrated Weighbridges**: Certified by the Department of Legal Metrology with digital gross & tare recording.\n` +
             `2. **Full MSP Price Guarantee**: Backed by AP State Civil Supplies Corporation and Food Corporation of India (FCI).\n` +
             `3. **Direct Benefit Transfer (DBT)**: Payout is transmitted directly to your verified Rythu Bharosa / PM-KISAN bank account with zero middleman deductions.\n\n` +
@@ -676,7 +676,7 @@ export const KisanMitraAI: React.FC<KisanMitraAIProps> = ({
     // 6. DEFAULT POLITE DIRECT 2-SENTENCE FALLBACK
     if (lang === 'te') {
       return {
-        text: `నమస్కారం! నేను రైతుమిత్ర (RythuMitra) అందించే కిసాన్ మిత్ర AI సహాయకుడిని. తక్కువ రద్దీ గల APMC/PACS డిపోలను గుర్తించడంలో, బస్తాలు మరియు క్వింటాళ్ల మద్దతు ధర (MSP) గణించడంలో మరియు మీ కాటా టోకెన్‌లను ట్రాక్ చేయడంలో సహాయపడతాను.`,
+        text: `నమస్కారం! నేను ఫామ్‌గెయిన్ (FarmGain) అందించే కిసాన్ మిత్ర AI సహాయకుడిని. తక్కువ రద్దీ గల APMC/PACS డిపోలను గుర్తించడంలో, బస్తాలు మరియు క్వింటాళ్ల మద్దతు ధర (MSP) గణించడంలో మరియు మీ కాటా టోకెన్‌లను ట్రాక్ చేయడంలో సహాయపడతాను.`,
         chips: [
           { label: '🌾 Best depot for Paddy right now?', query: 'Best depot for Paddy right now?' },
           { label: '💰 Calculate 100 bags Paddy MSP payout', query: 'Calculate 100 bags Paddy MSP payout' },
@@ -685,7 +685,7 @@ export const KisanMitraAI: React.FC<KisanMitraAIProps> = ({
       };
     } else if (lang === 'hi') {
       return {
-        text: `नमस्कार! मैं रैतु मित्र (RythuMitra) द्वारा संचालित किसान मित्र एआई हूँ। मैं निकटतम कम प्रतीक्षा वाली सरकारी मंडियों को खोजने, एमएसपी दर की गणना करने और आपके कांटा टोकन को ट्रैक करने में आपकी सहायता कर सकता हूँ।`,
+        text: `नमस्कार! मैं फार्म-गेन (FarmGain) द्वारा संचालित किसान मित्र एआई हूँ। मैं निकटतम कम प्रतीक्षा वाली सरकारी मंडियों को खोजने, एमएसपी दर की गणना करने और आपके कांटा टोकन को ट्रैक करने में आपकी सहायता कर सकता हूँ।`,
         chips: [
           { label: '🌾 Best depot for Paddy right now?', query: 'Best depot for Paddy right now?' },
           { label: '💰 Calculate 100 bags Paddy MSP payout', query: 'Calculate 100 bags Paddy MSP payout' },
@@ -694,7 +694,7 @@ export const KisanMitraAI: React.FC<KisanMitraAIProps> = ({
       };
     } else {
       return {
-        text: `Namaskaram! I am Kisan Mitra, your AI assistant powered by RythuMitra. I help you discover low-wait APMC & PACS depots, compute exact MSP earnings across bags and quintals, and track your weighbridge gate passes.`,
+        text: `Namaskaram! I am Kisan Mitra, your AI assistant powered by FarmGain. I help you discover low-wait APMC & PACS depots, compute exact MSP earnings across bags and quintals, and track your weighbridge gate passes.`,
         chips: [
           { label: '🌾 Best depot for Paddy right now?', query: 'Best depot for Paddy right now?' },
           { label: '💰 Calculate 100 bags Paddy MSP payout', query: 'Calculate 100 bags Paddy MSP payout' },
